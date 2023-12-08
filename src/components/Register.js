@@ -34,29 +34,15 @@ const Register = () => {
   return (
     <div className="register">
       <p className="register__welcome">
-        Пожалуйста, зарегистрируйтесь.
+        Регистрация
       </p>
       <form onSubmit={handleSubmit} className="register__form">
-        <label htmlFor="username">
-          Логин:
-        </label>
-        <input id="username" name="username" type="text" value={formValue.username} onChange={handleChange} />
-        <label htmlFor="email">
-          Email:
-        </label>
-        <input id="email" name="email" type="email" value={formValue.email} onChange={handleChange} />
-        <label htmlFor="password">
-          Пароль:
-        </label>
-        <input id="password" name="password" type="password" value={formValue.password} onChange={handleChange} />
-        <label htmlFor="confirmPassword">
-          Повторите пароль:
-        </label>
-        <input id="confirmPassword" name="confirmPassword" type="password" value={formValue.confirmPassword} onChange={handleChange} />
-        <label htmlFor="calGoal">
-          Калории за день:
-        </label>
-        <input id="calGoal" name="calGoal" type="number" value={formValue.calGoal} onChange={handleChange} />
+       
+       
+        <input id="email" name="email" placeholder='Email' type="email" value={formValue.email} onChange={handleChange} />
+       
+        <input id="password" name="password" placeholder='Пароль' type="password" value={formValue.password} onChange={handleChange} />
+  
         <div className="register__button-container">
           <button type="submit" onSubmit={handleSubmit} className="register__link">Зарегистрироваться</button>
         </div>
