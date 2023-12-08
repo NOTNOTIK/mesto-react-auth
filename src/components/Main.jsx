@@ -3,15 +3,17 @@ import add from "../images/add.svg";
 import React from "react";
 import Card from "./Card.js";
 import { currentUserContext } from '../contexts/CurrentUserContext';
-export default function Main(props) {
+import { useContext } from "react";
+export default function Main({onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick,onCardLike, onCardDelete }) {
  
   
-  const userContext = React.useContext(currentUserContext);
+  const userContext = useContext(currentUserContext);
+ 
   return (
     <main className="main">
       <section className="profile">
         <div className="profile__card">
-          <button className="avatar" onClick={props.onEditAvatar}>
+          <button className="avatar" onClick={onEditAvatar}>
             <img src={userContext.avatar} alt={userContext.name} className="profile__avatar" />
           </button>
           <div className="profile__info">
@@ -20,7 +22,7 @@ export default function Main(props) {
               <button
                 type="button"
                 className="profile__button profile__button_type_edit"
-                onClick={props.onEditProfile}
+                onClick={onEditProfile}
               >
                 <img src={edit} className="image image_type_edit" alt="edit" />
               </button>
@@ -31,15 +33,15 @@ export default function Main(props) {
         <button
           type="button"
           className="profile__button profile__button_type_add"
-          onClick={props.onAddPlace}
+          onClick={onAddPlace}
         >
           <img src={add} className="image image_type_add" alt="Добавить" />
         </button>
       </section>
       <section className="cards">
-        {props.cards.map((card) => {
+        {cards.map((card) => {
           return (
-            <Card card={card} key={card._id} onCardClick={props.onCardClick} onCardLike={props.onCardLike} onCardDelete={props.onCardDelete}/>
+            <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete}/>
           );
         })}
       </section>

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Header from "./Header.js";
 import Main from "./Main.jsx";
 import Footer from "./Footer.js";
@@ -130,6 +130,8 @@ function App() {
   }
 
   return (
+    <div className="page">
+
     <currentUserContext.Provider value={currentUser}>
       <>
       <Header />
@@ -152,7 +154,7 @@ function App() {
     } 
 
 
-<Route path="/main" element={
+<Route path="/" element={
       <ProtectedRoute
       loggedIn={loggedIn}
       element={Main} 
@@ -163,16 +165,17 @@ function App() {
       onCardLike = {handleCardLike}
       onCardDelete = {handleCardDelete}
       cards={cards}
-
+      currentUser={currentUser}
       
       />
     } />
-   
-    <Route path="/sign-in" element={<Login handleLogin={handleLogin}  />} />
+   <Route path="/sign-in" element={<Login handleLogin={handleLogin}  />} />
+    
     <Route path="/sign-up" element={<Register/>} />
     </Routes>
+    </>
         <Footer />
-        </>
+       
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
@@ -191,6 +194,7 @@ function App() {
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
      
     </currentUserContext.Provider>
+    </div>
   );
 };
 
