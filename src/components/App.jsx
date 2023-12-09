@@ -10,9 +10,14 @@ import ImagePopup from "./ImagePopup.js";
 import api from "../utils/api.js";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { currentUserContext } from "../contexts/CurrentUserContext.js";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Login from "./Login.js";
 import Register from "./Register.js";
+import { authApi } from "../utils/auth.js";
+import InfoTooltip from "./InfoToolTip.js";
+import complete from '../images/Complete.svg';
+import error from '../images/Error.svg';
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     useState(false);
@@ -22,12 +27,78 @@ function App() {
   const [selectedCard, setSelectedCard] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [userMail, setUserMail] = useState('');
+ 
+
+  const [statusRegisterPopup, setStatusRegisterPopup] = useState(false);
+  const [avatarStatusRegisterPopup, setAvatarStatusRegisterPopup] = useState(null);
+  const [textStatusRegisterPopup, setTextStatusRegisterPopup] = useState('');
+
   const [loggedIn, setLoggedIn] = useState(false);
-const handleLogin = () => {
+  const navigate = useNavigate();
+
+function handleLogin (email, password) {
   setLoggedIn(true);
+  authApi.authorize(email, password)
+  .then((res) => {
+   if(res){
+    localStorage.setItem('jwt', res.token);
+    setUserMail(email)
+    setLoggedIn(true);
+    navigate("/", {replace: true});
+   }
+  })
+  .catch((err) => {
+    console.log(err)
+    setStatusRegisterPopup(true);
+    setTextStatusRegisterPopup('Что-то пошло не так! Попробуйте ещё раз.');
+    setAvatarStatusRegisterPopup(error);
+  })
 }
 
-  React.useEffect(() => {
+const exit = () => {
+  localStorage.removeItem('jwt');
+  setUserMail('');
+  navigate("/sign-in", {replace: true});
+}
+
+function handleCheckToken ()  {
+  if (localStorage.getItem('jwt')) {
+    const jwt = localStorage.getItem('jwt');
+    authApi.checkToken(jwt)
+    .then((res) => {
+      setUserMail(res.data.email)
+      setLoggedIn(true)
+      navigate('/', {replace: true});
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+}
+useEffect(() => {
+  handleCheckToken()
+})
+  
+
+function handleRegistration(email, password){
+authApi.registration(email, password)
+.then(() => {
+  setTextStatusRegisterPopup('Вы успешно зарегистрировались!');
+  setStatusRegisterPopup(true);
+  setAvatarStatusRegisterPopup(complete);
+  navigate("/sign-in", {replace: true});
+
+})
+.catch((err) => {
+console.log(err)
+setStatusRegisterPopup(true);
+setTextStatusRegisterPopup('Что-то пошло не так! Попробуйте ещё раз.');
+setAvatarStatusRegisterPopup(error);
+})
+}
+
+  useEffect(() => {
     api.getAllCards()
       .then((cardsInfo) => {
         setCards(cardsInfo);
@@ -37,7 +108,7 @@ const handleLogin = () => {
       });
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     api.getUserApi()
       .then((res) => {
         setCurrentUser(res);
@@ -59,12 +130,11 @@ const handleLogin = () => {
   function handleCardClick(card) {
     setSelectedCard(card);
   }
-  function handleCardDelete(card) {
-    setSelectedCard(card);
-  }
+  
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setStatusRegisterPopup(false)
     setIsEditAvatarPopupOpen(false);
     setSelectedCard(null);
   }
@@ -125,20 +195,14 @@ const handleLogin = () => {
   return (
     <currentUserContext.Provider value={currentUser}>
      
-        <Header />
-     {/*<Main
-          onEditAvatar={handleEditAvatarClick}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onCardClick={handleCardClick}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-          cards={cards}
-        /> */}   
+     <Header mail={userMail} exit = {exit}/>
+    
      <>
 <Routes>
 <Route path="/" element={
               <ProtectedRoute
+              element={Main}
+              loggedIn={loggedIn}
               onEditAvatar={handleEditAvatarClick}
               onEditProfile={handleEditProfileClick}
               onAddPlace={handleAddPlaceClick}
@@ -151,7 +215,7 @@ const handleLogin = () => {
               />
             } />
 <Route path="/sign-in" element={<Login  handleLogin={handleLogin}/>}/>
-<Route path="/sign-up" element={<Register/>}/>
+<Route path="/sign-up" element={<Register handleRegister={handleRegistration} />}/>
 </Routes>
 </>
 
@@ -172,6 +236,12 @@ const handleLogin = () => {
           onClose={closeAllPopups}
           onAddPlace={handleAddPlace}
         />
+        <InfoTooltip
+    isOpen={statusRegisterPopup}
+    onClose={closeAllPopups}
+    logo={avatarStatusRegisterPopup}
+    name={textStatusRegisterPopup}
+  />
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
  

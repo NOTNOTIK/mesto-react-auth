@@ -1,17 +1,12 @@
 import React, {useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import * as auth from '../auth.js';
+import {Link} from 'react-router-dom';
 import './styles/Register.css';
 
-const Register = () => {
+const Register = ({handleRegister}) => {
   const [formValue, setFormValue] = useState({
-    username: '',
     email: '',
-    password: '',
-    confirmPassword: '',
-    calGoal: ''
-  })
-  const navigate = useNavigate();
+    password: ''
+  });
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -21,15 +16,13 @@ const Register = () => {
       [name]: value
     });
   }
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formValue.password === formValue.confirmPassword){
-      auth.register(formValue.username, formValue.password, formValue.email).then((res) => {
-        navigate('/sign-in', {replace: true});
-        }
-      );
-    }
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    handleRegister(formValue.email, formValue.password)
+   
   }
+  
 
   return (
     <div className="register">
@@ -49,10 +42,10 @@ const Register = () => {
       </form>
       <div className="register__signin">
         <p>Уже зарегистрированы?</p>
-        <Link to="sign-in" className="register__login-link">Войти</Link>
+        <Link to="/" className="register__login-link">Войти</Link>
       </div>
     </div>
   );
-}
 
+}
 export default Register;
