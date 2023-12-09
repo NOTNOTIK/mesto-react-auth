@@ -51,7 +51,7 @@ function handleSetDescription(e) {
               className="popup__input popup__input_type_name"
               minLength={2}
               maxLength={40}
-              value={name}
+              value={name || ''} 
               required
               onChange={handleSetName}
               
@@ -67,7 +67,7 @@ function handleSetDescription(e) {
               minLength={2}
               maxLength={200}
               onChange={handleSetDescription}
-              value={description}
+              value={description || ''}
               required
             />
             <span className="error" id="about-error" />

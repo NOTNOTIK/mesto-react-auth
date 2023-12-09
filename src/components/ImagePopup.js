@@ -8,7 +8,7 @@ export default function ImagePopup(props) {
         <img
           className="popup__image"
           src={props.card?.link}
-          alt={`${props.card?.name}`}
+          alt={props.card?.name} 
         />
         <p className="popup__figcaption">{props.card?.name}</p>
         <button

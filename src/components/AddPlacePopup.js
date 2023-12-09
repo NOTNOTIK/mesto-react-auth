@@ -1,8 +1,8 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
+import { useEffect } from "react";
 
-
-export default function AddPlacePopup(props) {
+export default function AddPlacePopup({isOpen, onClose, onAddPlace}) {
 
 const name = React.useRef(null)
 const link = React.useRef(null)
@@ -12,20 +12,21 @@ const link = React.useRef(null)
         e.preventDefault();
 
         // Передаём значения управляемых компонентов во внешний обработчик
-        props.onAddPlace({
+        onAddPlace({
             name: name.current.value,
             link: link.current.value
         });
-
+      
+      
       }
 
       return(
         <PopupWithForm
         name="add"
-        isOpen={props.isOpen}
+        isOpen={isOpen}
         title="Новое Место"
         buttonText="Создать"
-        onClose={props.onClose}
+        onClose={onClose}
         onSubmit={handleSubmit}
         children={
           <>
