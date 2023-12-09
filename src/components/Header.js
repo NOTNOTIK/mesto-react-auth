@@ -12,17 +12,17 @@ export default function Header({ mail, exit}) {
           <Route path='/' element={
             <div className='header__log'>
               <p className='header__mail'>{mail}</p>
-              <p className='header__condition' onClick={exit}>Выйти</p>
+              <p className='header__cabinet' onClick={exit}>Выйти</p>
             </div>
           } />
           <Route path='/sign-in' element={
             <div className='header__log'>
-              <Link to="/sign-up" className='header__condition'>Регистрация</Link>
+              <Link to="/sign-up" className='header__cabinet'>Регистрация</Link>
             </div>
           } />
           <Route path='/sign-up' element={
             <div className='header__log'>
-              <Link to="/sign-in" className='header__condition'>Войти</Link>
+              <Link to="/sign-in" className='header__cabinet'>Войти</Link>
             </div>
           } />
         </Routes>
