@@ -21,9 +21,8 @@ export default function EditAvatarPopup(props){
         buttonText="Сменить"
         onClose={props.onClose}
         onSubmit={handleSubmit}
-        children={
-          <>
-            <label>
+        >
+           <label>
               <input
                 type="url"
                 placeholder="Ссылка на картинку"
@@ -35,8 +34,7 @@ export default function EditAvatarPopup(props){
               />
               <span className="error" id="avatar-error" />
             </label>
-            </>
-        }
-        />
+        </PopupWithForm>
+      
       )
 }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./styles/Register.css";
+import "../blocks/register/Register.css"
 
 const Register = ({ handleRegister }) => {
   const [formValue, setFormValue] = useState({

@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import { currentUserContext } from "../contexts/CurrentUserContext.js";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import Login from "./Login.js";
 import Register from "./Register.js";
 import { authApi } from "../utils/auth.js";
@@ -27,7 +28,7 @@ function App() {
   const [cards, setCards] = useState([]);
   const [userMail, setUserMail] = useState("");
 
-  const [statusRegisterPopup, setStatusRegisterPopup] = useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [infoTooltipImage, setInfoTooltipImage] = useState("");
   const [infoTooltipText, setInfoTooltipText] = useState("");
 
@@ -47,7 +48,7 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
-        setStatusRegisterPopup(true);
+        setIsInfoTooltipOpen(true);
         setInfoTooltipText("Что-то пошло не так! Попробуйте ещё раз.");
         setInfoTooltipImage(error);
       });
@@ -84,28 +85,29 @@ function App() {
       .register(email, password)
       .then(() => {
         setInfoTooltipText("Вы успешно зарегистрировались!");
-        setStatusRegisterPopup(true);
+        setIsInfoTooltipOpen(true);
         setInfoTooltipImage(complete);
         navigate("/sign-in", { replace: true });
       })
       .catch((err) => {
         console.log(err);
-        setStatusRegisterPopup(true);
+        setIsInfoTooltipOpen(true);
         setInfoTooltipText("Что-то пошло не так! Попробуйте ещё раз.");
         setInfoTooltipImage(error);
       });
   }
-
-  Promise.all([api.getAllCards(), api.getUserApi()])
-    .then(([cardsInfo, res]) => {
-      if (localStorage.getItem("jwt")) {
-        setCards(cardsInfo);
-        setCurrentUser(res);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  useEffect(() => {
+    if (loggedIn) {
+      Promise.all([api.getAllCards(), api.getUserApi()])
+        .then(([cardsInfo, res]) => {
+          setCards(cardsInfo);
+          setCurrentUser(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
@@ -123,22 +125,23 @@ function App() {
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
-    setStatusRegisterPopup(false);
+    setIsInfoTooltipOpen(false);
     setIsEditAvatarPopupOpen(false);
     setSelectedCard(null);
   }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((item) => item._id === currentUser._id);
-    const checkLike = isLiked ? api.deleteLike(card._id) : api.setLike(card._id);
+    const checkLike = isLiked
+      ? api.deleteLike(card._id)
+      : api.setLike(card._id);
 
     checkLike.then((newCard) => {
-      const newCards = cards.map((c) => (c._id === card._id ? newCard : c));
-      setCards(newCards);
-    })
-    checkLike.catch((err)=>{
-console.log(err)
-    })
+      setCards((cards) => cards.map((c) => (c._id === card._id ? newCard : c)));
+    });
+    checkLike.catch((err) => {
+      console.log(err);
+    });
   }
   function handleCardDelete(card) {
     console.log("delte");
@@ -210,6 +213,7 @@ console.log(err)
               />
             }
           />
+
           <Route
             path="/sign-in"
             element={<Login handleLogin={handleLogin} />}
@@ -217,6 +221,10 @@ console.log(err)
           <Route
             path="/sign-up"
             element={<Register handleRegister={handleRegistration} />}
+          />
+          <Route
+            path="/*"
+            element={<Navigate to={loggedIn ? "/" : "/sign-in"} />}
           />
         </Routes>
       </>
@@ -239,7 +247,7 @@ console.log(err)
         onAddPlace={handleAddPlace}
       />
       <InfoTooltip
-        isOpen={statusRegisterPopup}
+        isOpen={isInfoTooltipOpen}
         onClose={closeAllPopups}
         logo={infoTooltipImage}
         name={infoTooltipText}
